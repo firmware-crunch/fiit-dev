@@ -1,0 +1,37 @@
+################################################################################
+#
+# Copyright 2022-2025 Vincent Dary
+#
+# This file is part of fiit.
+#
+# fiit is free software: you can redistribute it and/or modify it under the
+# terms of the GNU Affero General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your option) any
+# later version.
+#
+# fiit is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+# details.
+#
+# You should have received a copy of the GNU Affero General Public License along
+# with fiit. If not, see <https://www.gnu.org/licenses/>.
+#
+################################################################################
+
+version: '3.7'
+
+services:
+  fiit:
+    image: ${DOCKER_IMG_NAME}
+    container_name: ${DOCKER_CONTAINER_NAME}
+    init: true
+    network_mode: host
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ${DEV_DIR}:${DEV_DIR_CONTAINER}
+    environment:
+      - TZ="Europe/Paris"
+      - DISPLAY=${DISPLAY}
+    cap_add:
+        - SYS_PTRACE
