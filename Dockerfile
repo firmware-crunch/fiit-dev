@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Copyright 2022-2025 Vincent Dary
+# Copyright 2022-2026 Vincent Dary
 #
 # This file is part of fiit.
 #
@@ -19,7 +19,7 @@
 #
 ################################################################################
 
-FROM debian:bookworm-20240904
+FROM docker.io/library/debian:bookworm-20240904
 
 ARG USERNAME=fiit
 ARG USER_UID=1000

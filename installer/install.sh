@@ -2,7 +2,7 @@
 
 ################################################################################
 #
-# Copyright 2022-2025 Vincent Dary
+# Copyright 2022-2026 Vincent Dary
 #
 # This file is part of fiit.
 #
@@ -33,12 +33,12 @@ SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 ################################################################################
 # Constants
 ################################################################################
-USER=$1
+INSTALL_USER=$1
 INSTALL_DIR=$2
 THIRD_PARTY_DIR="${INSTALL_DIR}/third-party"
-USER_ID=$(id -u "$USER")
-USER_GID=$(id -g "$USER")
-USER_BASHRC=/home/${USER}/.bashrc
+INSTALL_USER_ID=$(id -u "$INSTALL_USER")
+INSTALL_USER_GID=$(id -g "$INSTALL_USER")
+INSTALL_USER_BASHRC=/home/${INSTALL_USER}/.bashrc
 
 ################################################################################
 # Install
@@ -50,14 +50,14 @@ mkdir "${THIRD_PARTY_DIR}"
 # Dirty workaround related to container issue with gethostbyname not working
 host_ips=$(hostname -I | cut -d\  -f1)
 echo "${host_ips} $(hostname)" > /etc/hosts
-chown ${USER}: /etc/hosts
+chown ${INSTALL_USER}: /etc/hosts
 {
   echo -e "\n\n#"
   echo "# Dirty workaround related to container issue with gethostbyname"
   echo "#"
   echo 'echo $(hostname -I | cut -d\  -f1) $(hostname) > /etc/hosts'
   echo -e "\n\n"
-} >> "${USER_BASHRC}"
+} >> "${INSTALL_USER_BASHRC}"
 chmod ugo=rw /etc/hosts
 
 # main system package bootstrap
@@ -67,7 +67,7 @@ apt-get install --yes $(cat "${SCRIPT_DIR}/debian_packages.txt")
 
 # Git configuration
 cp -v "${SCRIPT_DIR}/.gitconfig" /root
-sudo -u "${USER}" cp -v "${SCRIPT_DIR}/.gitconfig" "/home/${USER}"
+sudo -u "${INSTALL_USER}" cp -v "${SCRIPT_DIR}/.gitconfig" "/home/${INSTALL_USER}"
 
 
 # conda install with conda-forge repository
@@ -83,19 +83,19 @@ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/conda-archive-keyring.gpg] h
 apt-get update
 apt-get install --yes conda
 
-sudo -u "${USER}" ${CONDA_BIN} init
-sudo -u "${USER}" ${CONDA_BIN} config --set auto_activate_base false
-sudo -u "${USER}" ${CONDA_BIN} config --add channels conda-forge
-sudo -u "${USER}" ${CONDA_BIN} config --remove channels defaults
-sudo -u "${USER}" ${CONDA_BIN} config --show channels
-sudo -u "${USER}" ${CONDA_BIN} info
+sudo -u "${INSTALL_USER}" ${CONDA_BIN} init
+sudo -u "${INSTALL_USER}" ${CONDA_BIN} config --set auto_activate_base false
+sudo -u "${INSTALL_USER}" ${CONDA_BIN} config --add channels conda-forge
+sudo -u "${INSTALL_USER}" ${CONDA_BIN} config --remove channels defaults
+sudo -u "${INSTALL_USER}" ${CONDA_BIN} config --show channels
+sudo -u "${INSTALL_USER}" ${CONDA_BIN} info
 
 
 # install python conda environment
 PYTHON_VER="3.9.2"
 DEFAULT_DEV_PY_ENV_NAME="conda_env_py_${PYTHON_VER}"
 DEFAULT_DEV_PY_ENV_PATH="/opt/fiit-dev/${PYTHON_VER//./_}"
-sudo -u "${USER}" bash -c \
+sudo -u "${INSTALL_USER}" bash -c \
   "echo y | ${CONDA_BIN} create --prefix '${DEFAULT_DEV_PY_ENV_PATH}' python==${PYTHON_VER}"
 
 {
@@ -106,15 +106,15 @@ echo "if [ -f '/opt/conda/etc/profile.d/conda.sh' ]; then"
 echo "    . '/opt/conda/etc/profile.d/conda.sh'"
 echo "    conda activate ${DEFAULT_DEV_PY_ENV_PATH}"
 echo "fi"
-} >> "${USER_BASHRC}"
+} >> "${INSTALL_USER_BASHRC}"
 
 
 # fiit bootstrap from github
 cd "${INSTALL_DIR}"
 FIIT_GIT_URL="https://github.com/firmware-crunch/fiit.git"
-sudo -u "${USER}" bash -c "git clone '${FIIT_GIT_URL}'"
+sudo -u "${INSTALL_USER}" bash -c "git clone '${FIIT_GIT_URL}'"
 cd fiit
-sudo -u "${USER}" ${CONDA_BIN} run -vvv --prefix ${DEFAULT_DEV_PY_ENV_PATH} pip install -e .[DEV]
+sudo -u "${INSTALL_USER}" ${CONDA_BIN} run -vvv --prefix ${DEFAULT_DEV_PY_ENV_PATH} pip install -e .[DEV]
 
 
 # ghidra bootstrap from github
@@ -129,5 +129,5 @@ rm -f "${GHIDRA_PKG_NAME}"
 
 
 # Filesystem setting
-chown -R ${USER_ID}:${USER_GID} "${INSTALL_DIR}"
+chown -R ${INSTALL_USER_ID}:${INSTALL_USER_GID} "${INSTALL_DIR}"
 rm -rf "${SCRIPT_DIR}"

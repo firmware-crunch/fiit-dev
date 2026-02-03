@@ -2,7 +2,7 @@
 
 ################################################################################
 #
-# Copyright 2022-2025 Vincent Dary
+# Copyright 2022-2026 Vincent Dary
 #
 # This file is part of fiit.
 #
@@ -24,6 +24,9 @@
 DOCKER_IMG_NAME=fiit-dev
 DOCKER_CONTAINER_NAME=${DOCKER_IMG_NAME}
 
+DOCK_BIN=podman
+DOCK_COMPOSE_BIN=podman-compose
+
 DEV_DIR_CONTAINER=/opt/fiit-dev
 
 if [[ -z "${DEV_DIR}" ]]; then
@@ -36,7 +39,7 @@ set -e
 SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 INSTALLER_DIR_NAME=installer
 
-docker build \
+$DOCK_BIN build \
   --build-arg DEV_DIR_CONTAINER="${DEV_DIR_CONTAINER}" \
   --no-cache \
   --progress plain \
@@ -48,13 +51,13 @@ DEV_DIR="${DEV_DIR}" \
 DEV_DIR_CONTAINER="${DEV_DIR_CONTAINER}" \
 DOCKER_IMG_NAME=${DOCKER_IMG_NAME} \
 DOCKER_CONTAINER_NAME=${DOCKER_CONTAINER_NAME} \
-  docker-compose up -d
+  $DOCK_COMPOSE_BIN up -d
 
 cp -r "${SCRIPT_DIR}/${INSTALLER_DIR_NAME}" "${DEV_DIR}"
 
-docker exec -u root -it "${DOCKER_CONTAINER_NAME}" \
+$DOCK_BIN exec -u root -it "${DOCKER_CONTAINER_NAME}" \
   chmod u+x "${DEV_DIR_CONTAINER}/${INSTALLER_DIR_NAME}/install.sh"
 
-docker exec -u root -it "${DOCKER_CONTAINER_NAME}" \
+$DOCK_BIN exec -u root -it "${DOCKER_CONTAINER_NAME}" \
   "${DEV_DIR_CONTAINER}/${INSTALLER_DIR_NAME}/install.sh" \
     fiit "${DEV_DIR_CONTAINER}"

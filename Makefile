@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Copyright 2022-2025 Vincent Dary
+# Copyright 2022-2026 Vincent Dary
 #
 # This file is part of fiit.
 #
@@ -20,13 +20,14 @@
 ################################################################################
 
 USER := fiit
-DOCKER_IMG_NAME := fiit-dev
-DOCKER_CONTAINER_NAME := $(DOCKER_IMG_NAME)
+IMG_NAME := fiit-dev
+CONTAINER_NAME := $(IMG_NAME)
+DOCK_BIN := podman
 
 connect:
-	docker exec -u $(USER) -it $(DOCKER_CONTAINER_NAME) bash
+	$(DOCK_BIN) exec -u $(USER) -it $(CONTAINER_NAME) bash
 
-clean_docker_env:
-	docker stop $(DOCKER_CONTAINER_NAME)
-	docker rm $(DOCKER_CONTAINER_NAME)
-	docker image rm $(DOCKER_IMG_NAME)
+clean_container_env:
+	- $(DOCK_BIN) stop $(CONTAINER_NAME)
+	- $(DOCK_BIN) rm $(CONTAINER_NAME)
+	- $(DOCK_BIN) image rm $(IMG_NAME)

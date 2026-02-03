@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Copyright 2022-2025 Vincent Dary
+# Copyright 2022-2026 Vincent Dary
 #
 # This file is part of fiit.
 #
@@ -19,7 +19,8 @@
 #
 ################################################################################
 
-version: '3.7'
+x-podman:
+  in_pod: false
 
 services:
   fiit:
@@ -27,9 +28,10 @@ services:
     container_name: ${DOCKER_CONTAINER_NAME}
     init: true
     network_mode: host
+    userns_mode: "keep-id"
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ${DEV_DIR}:${DEV_DIR_CONTAINER}
+      - ${DEV_DIR}:${DEV_DIR_CONTAINER}:z
     environment:
       - TZ="Europe/Paris"
       - DISPLAY=${DISPLAY}
