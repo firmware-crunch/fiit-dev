@@ -91,11 +91,12 @@ sudo -u "${USER}" ${CONDA_BIN} config --show channels
 sudo -u "${USER}" ${CONDA_BIN} info
 
 
-# install python 3.9.2 conda environment
-DEFAULT_DEV_PY_ENV_NAME=conda_env_py_3_9_2
-DEFAULT_DEV_PY_ENV_PATH="/opt/fiit-dev/${DEFAULT_DEV_PY_ENV_NAME}"
+# install python conda environment
+PYTHON_VER="3.9.2"
+DEFAULT_DEV_PY_ENV_NAME="conda_env_py_${PYTHON_VER}"
+DEFAULT_DEV_PY_ENV_PATH="/opt/fiit-dev/${PYTHON_VER//./_}"
 sudo -u "${USER}" bash -c \
-  "echo y | ${CONDA_BIN} create --prefix '${DEFAULT_DEV_PY_ENV_PATH}' python==3.9.2"
+  "echo y | ${CONDA_BIN} create --prefix '${DEFAULT_DEV_PY_ENV_PATH}' python==${PYTHON_VER}"
 
 {
 echo -e "\n\n#"
